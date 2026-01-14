@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LuxAxion | 給你的困惑與問題，一個精準的方向與下一步</title>
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://luxaxion.netlify.app/">
+    <meta property="og:title" content="LuxAxion | 給你的困惑與問題，一個精準的方向與下一步">
+    <meta property="og:description" content="結合易經、卡巴拉與煉金術的精準對位，為你的現狀找到清晰出口。">
+    <meta property="og:image" content="https://luxaxion.netlify.app/og-image.png">
+    
+    <style>
+        :root { --gold: #C5A059; --midnight: #1A2233; --white: #F5F5F5; --accent: #D4AF37; }
+        body { background: #141E30; color: var(--white); font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-x: hidden; }
+        .container { width: 90%; max-width: 420px; padding: 25px; text-align: center; }
+        .logo { color: var(--gold); font-size: 1.8rem; letter-spacing: 8px; margin-bottom: 30px; font-weight: bold; }
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.8s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 15px; color: #fff; padding: 15px; font-size: 1rem; outline: none; margin-top: 20px; box-sizing: border-box; }
+        .instruction-list { text-align: center; font-size: 0.9rem; line-height: 1.8; color: var(--white); opacity: 0.9; margin: 20px 0; list-style: none; padding: 0; }
+
+        /* 浮窗樣式 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
+        .modal-content { width: 85%; max-width: 350px; background: #1A2233; border: 1px solid var(--gold); border-radius: 20px; padding: 25px; text-align: left; position: relative; animation: modalIn 0.4s ease forwards; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .modal-title { color: var(--gold); font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; text-align: center; }
+        .modal-body { font-size: 0.9rem; line-height: 1.6; color: #ddd; }
+        .modal-body b { color: var(--gold); }
+        .close-modal { margin-top: 20px; background: transparent; border: 1px solid var(--gold); color: var(--gold); width: 100%; padding: 10px; border-radius: 30px; cursor: pointer; }
+
+        .help-link { color: var(--gold); font-size: 0.85rem; text-decoration: underline; cursor: pointer; margin-top: 10px; display: inline-block; opacity: 0.8; padding: 0 5px; }
+        .help-link:hover { opacity: 1; }
+
+        #coin-lab { height: 120px; display: flex; justify-content: center; align-items: center; margin: 20px 0; perspective: 1000px; }
+        .coin-slot { width: 50px; height: 50px; margin: 0 10px; border: 1px solid rgba(197, 160, 89, 0.2); border-radius: 50%; }
+        .coin { width: 48px; height: 48px; background: radial-gradient(circle, #F5D76E, var(--gold)); border-radius: 50%; opacity: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #403010; font-weight: bold; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        .sephiroth-map { position: relative; height: 400px; margin: 30px auto; width: 300px; }
+        .node { position: absolute; width: 55px; height: 55px; border-radius: 50%; border: 1px solid rgba(197, 160, 89, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; background: rgba(26, 34, 51, 0.9); z-index: 10; font-size: 1.5rem; color: var(--gold); }
+        .node:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--gold); border-color: #fff; }
+        .node.selected { border-color: #fff; box-shadow: 0 0 25px var(--gold); background: var(--gold); color: #000; }
+
+        .fluid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
+        .fluid-box { height: 85px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        .fluid-box span { position: relative; z-index: 2; }
+        .fluid-box::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; animation: flow 8s linear infinite; opacity: 0.6; z-index: 1; }
+        @keyframes flow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .black::after { background: conic-gradient(#000, #200020, #000); }
+        .white::after { background: conic-gradient(#fff, #e0e0ff, #fff); }
+        .white span { color: #000; }
+        .yellow::after { background: conic-gradient(#FFD700, #FFA500, #FFD700); }
+        .yellow span { color: #000; }
+        .red::after { background: conic-gradient(#8B0000, #FF0000, #8B0000); }
+
+        .result-card { background: #E9ECEF; color: #212529; padding: 25px; border-radius: 20px; text-align: left; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        .gua-box { display: flex; justify-content: space-around; background: rgba(0,0,0,0.05); padding: 15px; border-radius: 12px; margin: 15px 0; }
+        .line { font-family: monospace; font-size: 1.4rem; font-weight: bold; line-height: 1.2; letter-spacing: -1px; }
+        .line.active { color: #D63031; }
+
+        .main-btn { background: var(--gold); color: #141E30; border: none; padding: 18px; border-radius: 40px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 20px; transition: 0.3s; }
+        .main-btn:active { transform: scale(0.98); opacity: 0.9; }
+        .copy-btn { width: 100%; background: #f8f9fa; border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-top: 15px; cursor: pointer; font-size: 0.85rem; color: #333; transition: 0.3s; }
+        .copy-btn:hover { background: #eee; }
+        /* Instagram 引導區塊容器 */
+        .ig-redirect-box {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(197, 160, 89, 0.08); /* 淡淡的金屬透明感 */
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .ig-text {
+            font-size: 0.9rem;
+            color: var(--black);
+            margin-bottom: 10px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        /* 強化 Instagram 連結按鈕感 */
+        .ig-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold) !important;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 8px 16px;
+            border: 1.5px solid var(--gold);
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .ig-link:hover {
+            background: var(--gold);
+            color: #141E30 !important;
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+        }
+
+        /* 加入圖標提示（可選） */
+        .ig-link::before {
+            content: '📸 ';
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="helpModal" class="modal-overlay" onclick="toggleModal('helpModal', false)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-title">如何更精準地提問？</div>
+        <div class="modal-body">
+            1. <b>具體化問題：</b>避免問「我的未來如何？」，試著問「這兩個月內換工作對我的發展是否有益？」<br><br>
+            2. <b>專注當下：</b>潛意識導航適合解決目前的卡點與抉擇。<br><br>
+            3. <b>是非/選擇：</b>問題可以包含明確的動作，例如「我是否該啟動新的投資計畫？」<br><br>
+            4. <b>保持平靜：</b>輸入完後，請務必按照畫面的指令默念，這能協助您的能量對位。
+        </div>
+        <button class="close-modal" onclick="toggleModal('helpModal', false)">我明白了</button>
+    </div>
+</div>
+
+<div id="introModal" class="modal-overlay" onclick="toggleModal('introModal', false)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-title">啟動前必看</div>
+        <div class="modal-body">
+            歡迎來到 <b>LuxAxion.Lab</b>。<br><br>
+            這是一個結合<b>易經、卡巴拉、煉金術</b>的定位系統。在開始之前，請給自己一個安靜的空間。<br><br>
+            本系統不提供通靈預測，而是透過您的潛意識反應，映射出<b>現狀的局勢</b>與<b>建議的下一步</b>。請誠實地面對您的直覺，對位才會精準。
+        </div>
+        <button class="close-modal" onclick="toggleModal('introModal', false)">開始對位</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="logo">LuxAxion.Lab</div>
+
+    <div id="s0" class="step active">
+        <div style="color:var(--gold); font-size:1.1rem; font-weight:bold;">給你的困惑與問題，<br>找回精準的方向與下一步。</div>
+        <ul class="instruction-list">
+            <li>輸入問題後，請默念以下：</li>
+            <li>自己的名字三次 | 出生年月日 | 詢問的問題</li>
+            <li>最後默念：「請我的潛意識給我一個指示」</li>
+        </ul>
+        <textarea id="ui-q" placeholder="在此輸入你的困惑或問題..."></textarea>
+        
+        <div>
+            <span class="help-link" onclick="toggleModal('introModal', true)">📜 啟動前必看</span>
+            <span class="help-link" onclick="toggleModal('helpModal', true)">💡 如何問問題？</span>
+        </div>
+        
+        <button class="main-btn" onclick="toStep(1)">開始精準定位</button>
+    </div>
+
+    <div id="s1" class="step">
+        <h3 style="color:var(--gold);">來擲硬幣吧</h3>
+        <p style="opacity:0.8; font-size:0.9rem;">誠心地按下每一次的按鈕，一共六次</p>
+        <div id="coin-lab">
+            <div class="coin-slot"><div id="c1" class="coin">LIGHT</div></div>
+            <div class="coin-slot"><div id="c2" class="coin">LIGHT</div></div>
+            <div class="coin-slot"><div id="c3" class="coin">LIGHT</div></div>
+        </div>
+        <div id="coin-log" style="font-size:0.8rem; color:var(--gold); min-height:80px; margin-bottom:15px;"></div>
+        <button id="btn-toss" class="main-btn" onclick="doToss()">擲幣對齊</button>
+    </div>
+
+    <div id="s2" class="step">
+        <h3 style="color:var(--gold);">看著這些符號，哪一個對你來說最「有感覺」？</h3>
+        <div class="sephiroth-map">
+            <div class="node" style="top:0%; left:40%; border-color:#FFFFFF;" onclick="selK('Kether')">K</div>
+            <div class="node" style="top:15%; right:10%; border-color:#888;" onclick="selK('Chokmah')">C</div>
+            <div class="node" style="top:15%; left:10%; border-color:#666;" onclick="selK('Binah')">B</div>
+            <div class="node" style="top:40%; right:10%; border-color:#3498DB;" onclick="selK('Chesed')">♃</div>
+            <div class="node" style="top:40%; left:10%; border-color:#E74C3C;" onclick="selK('Geburah')">♂</div>
+            <div class="node" style="top:50%; left:40%; border-color:var(--gold);" onclick="selK('Tiphareth')">☉</div>
+            <div class="node" style="top:70%; right:10%; border-color:#33CC33;" onclick="selK('Netzach')">♀</div>
+            <div class="node" style="top:70%; left:10%; border-color:#FF9933;" onclick="selK('Hod')">☿</div>
+            <div class="node" style="top:85%; left:40%; border-color:#CC33FF;" onclick="selK('Yesod')">☽</div>
+            <div class="node" style="top:100%; left:40%; border-color:#996633;" onclick="selK('Malkuth')">⊕</div>
+        </div>
+    </div>
+
+    <div id="s3" class="step">
+        <h3 style="color:var(--gold);">最後一步，這四種光譜中，哪一個最吸引現在的你？</h3>
+        <div class="fluid-grid">
+            <div class="fluid-box black" onclick="selA('黑化','#0A000A')"><span>黑化</span></div>
+            <div class="fluid-box white" onclick="selA('白化','#F5F5F5')"><span>白化</span></div>
+            <div class="fluid-box yellow" onclick="selA('黃化','#1A1500')"><span>黃化</span></div>
+            <div class="fluid-box red" onclick="selA('紅化','#1A0000')"><span>紅化</span></div>
+        </div>
+    </div>
+
+    <div id="s4" class="step">
+        <div class="result-card">
+            <div id="rf-q" style="font-weight:bold; border-bottom:1px solid #ccc; padding-bottom:10px; margin-bottom:15px;"></div>
+            <div class="gua-box">
+                <div style="text-align:center;"><div id="g1-title" style="font-size:0.8rem; font-weight:bold; color:var(--gold); margin-bottom:5px;">本卦</div><div id="g1"></div></div>
+                <div style="text-align:center;"><div id="g2-title" style="font-size:0.8rem; font-weight:bold; color:var(--gold); margin-bottom:5px;">變卦</div><div id="g2"></div></div>
+            </div>
+            <div id="ai-guidance" style="margin-bottom: 15px; padding: 12px; background: #fff; color: #141E30; border-radius: 12px; font-weight: bold; font-size: 0.95rem; border-left: 5px solid var(--gold); display: none;">
+                <span id="ai-loading">🔮 導航對位中...</span>
+                <span id="ai-text"></span>
+            </div>
+            <div style="font-size:0.9rem; line-height:1.8;">
+                <div id="rf-k"></div>
+                <div id="rf-a"></div>
+            </div>
+            <button class="copy-btn" onclick="copyData()">📋 點選按鈕複製導航數據</button>
+            <div class="ig-redirect-box">
+                <div class="ig-text">
+                    將導航數據傳給 LuxAxion<br/>獲取更詳盡的個人化對位資訊。
+                </div>
+                <a href="https://www.instagram.com/LuxAxion.Lab" target="_blank" class="ig-link">
+                    Instagram @LuxAxion.Lab
+                </a>
+            </div>
+            <div id="copy-status" style="font-size:0.7rem; color:green; margin-top:5px; display:none; text-align:center;">已成功複製到剪貼簿！</div>
+        </div>
+        <button class="main-btn" style="background:#333; color:#fff;" onclick="location.reload()">重新校準</button>
+    </div>
+</div>
+
+<script>
+    const GUA_LIST = {"111111":"乾為天","000000":"坤為地","100010":"水雷屯","010001":"山水蒙","111010":"水天需","010111":"天水訟","010000":"地水師","000010":"水地比","111011":"風天小畜","110111":"天澤履","111000":"地天泰","000111":"天地否","101111":"天火同人","111101":"火天大有","001000":"地山謙","000100":"雷地豫","100110":"澤雷隨","011001":"山風蠱","110000":"地澤臨","000011":"風地觀","100101":"火雷噬嗑","101001":"山火賁","000001":"山地剝","100000":"地雷復","100111":"天雷無妄","111001":"山天大畜","100001":"山雷頤","011110":"澤風大過","010010":"坎為水","101101":"離為火","001110":"澤山咸","011100":"雷風恆","001111":"天山遯","111100":"雷天大壯","000101":"火地晉","101000":"地火明夷","101011":"風火家人","110101":"火澤睽","001010":"水山蹇","010100":"雷水解","110001":"山澤損","100011":"風雷益","111110":"澤天夬","011111":"天風姤","000110":"澤地萃","011000":"地風升","010110":"澤水困","011010":"水風井","101110":"澤火革","011101":"火風鼎","100100":"震為雷","001001":"艮為山","001011":"風山漸","110100":"雷澤歸妹","101100":"雷火豐","001101":"火山旅","011011":"巽為風","110110":"兌為澤","010011":"風水渙","110010":"水澤節","110011":"風澤中孚","001100":"雷山小過","101010":"水火既濟","010101":"火水未濟"};
+
+    let q="", coins=[], kab="", alch="", isAn=false;
+
+    function toggleModal(id, show) {
+        document.getElementById(id).style.display = show ? 'flex' : 'none';
+    }
+
+    function toStep(n) {
+        if(n===1 && !document.getElementById('ui-q').value) return alert("請輸入問題");
+        q = document.getElementById('ui-q').value;
+        document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+        document.getElementById('s'+n).classList.add('active');
+    }
+
+    function doToss() {
+        if(isAn || coins.length>=6) return;
+        isAn = true;
+        const cns = [document.getElementById('c1'), document.getElementById('c2'), document.getElementById('c3')];
+        cns.forEach(c => { c.style.opacity = '0'; c.style.transform = 'translateY(30px)'; });
+
+        setTimeout(() => {
+            cns.forEach(c => { c.style.opacity = '1'; c.style.transform = `translateY(0) rotateY(${720+Math.random()*360}deg)`; });
+            let s = (Math.random()>0.5?3:2)+(Math.random()>0.5?3:2)+(Math.random()>0.5?3:2);
+            coins.push(s);
+            let m = {6:"✕ 老陰", 7:"— 少陽", 8:"- - 少陰", 9:"◯ 老陽"};
+            let currentLine = coins.length;
+            const logEntry = document.createElement('div');
+            logEntry.style.marginBottom = "4px";
+            logEntry.innerHTML = `<span style="color:rgba(255,255,255,0.5)">第 ${currentLine} 爻：</span> [${m[s]}]`;
+            const logContainer = document.getElementById('coin-log');
+            logContainer.insertBefore(logEntry, logContainer.firstChild);
+            isAn = false;
+            if(coins.length===6) {
+                document.getElementById('btn-toss').innerText = "對齊完成";
+                setTimeout(() => toStep(2), 1000);
+            }
+        }, 50);
+    }
+    
+    function selK(v) { kab=v; toStep(3); }
+    function selA(v, color) { 
+        alch=v; document.body.style.background = color;
+        setTimeout(() => {
+            toStep(4);
+            document.getElementById('rf-q').innerText = "你的問題是：" + q;
+            document.getElementById('rf-k').innerHTML = "🔮 能量共振：<strong>" + kab + "</strong>";
+            document.getElementById('rf-a').innerHTML = "🔥 注入色調：<strong>" + alch + "</strong>";
+            drawG('g1', false); drawG('g2', true);
+            getAIGuidance(); // 在這裡觸發 AI
+        }, 600);
+    }
+
+    function getGua(cArr) {
+        let b = cArr.map(n => (n === 7 || n === 9 ? "1" : "0")).join("");
+        return GUA_LIST[b] || "未知卦象";
+    }
+
+    function drawG(id, isC) {
+        const el = document.getElementById(id);
+        const targetCoins = isC ? coins.map(n => (n===6?7:(n===9?8:n))) : coins;
+        const gName = getGua(targetCoins);
+        document.getElementById(id+'-title').innerText = (isC?'變卦：':'本卦：') + gName;
+        el.innerHTML = "";
+        [...targetCoins].reverse().forEach((n, i) => {
+            let isY = (n===7 || n===9);
+            let d = document.createElement('div');
+            d.className = 'line' + (!isC && (coins[5-i]===6||coins[5-i]===9) ? ' active':'');
+            d.innerText = isY ? "———————" : "———  ———";
+            el.appendChild(d);
+        });
+    }
+
+   async function getAIGuidance() {
+        const aiBox = document.getElementById('ai-guidance');
+        const aiText = document.getElementById('ai-text');
+        const aiLoading = document.getElementById('ai-loading');
+        
+        aiBox.style.display = 'block';
+        aiText.innerText = '';
+        aiLoading.style.display = 'inline';
+
+        // 核心設定
+        const part1 = "AIzaSyDIKcvgd--"; 
+        const part2 = "YfolSApsJFxo1j5GuLnJuYPQ"; 
+        const API_KEY = part1 + part2;
+        const modelName = "gemini-flash-latest"; 
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
+
+        // 1. 計算變爻與解卦邏輯
+        const changeCount = coins.filter(n => n === 6 || n === 9).length;
+        const rules = {
+            0: "以本卦的卦辭、卦義解卦。輔以大衍之數。",
+            1: "以本卦變爻辭解卦。",
+            2: "以本卦二變爻解卦（下爻為貞，上爻為悔）。",
+            3: "以本卦及變卦卦辭解卦（本卦為貞，變卦為悔）。",
+            4: "以變卦為貞，本卦為悔。",
+            5: "以變卦為貞，本卦為悔。",
+            6: "乾坤卦用九六，餘卦以變卦卦辭解。"
+        };
+        const specificRule = rules[changeCount] || rules[6];
+
+        // 2. 建構深度 Prompt
+        const prompt = `
+你是一位 LuxAxion 高級導師。你說話的語氣應「溫暖、專業、易懂」，避免過多難懂的文言文或艱深術語，請用現代白話語氣將智慧轉化為具體的指引。
+
+【核心數據】
+問題：${q}
+本卦：${getGua(coins)}
+變爻數：${changeCount}
+解卦準則：${rules[changeCount]||rules[6]}
+卡巴拉：${kab}
+鍊金術階段：${alch}
+
+【回覆規則】
+1. **垃圾過濾**：若問題無意義（如 test, 123...），僅回覆：「🔮 能量尚未聚焦。請誠心輸入您具體想指引的問題，再進行校準。」並結束。
+
+2. **深度解析要求**：
+   * **全部的回覆字數約在300字內，不要在回覆末尾顯示「(xx字)」等字數標註。**
+   * **開頭不要用LuxAxion 高級導師的開頭**
+   * **a.【卦象指引】**：用平易近人的白話解釋卦象對目前問題的影響。就像在聊天一樣，告訴對方現在的局勢是什麼、要注意什麼。
+   * **b.【能量共振】**：根據 ${kab} 給予生活化的心靈建議，讓對方知道可以如何調整心態。
+   * **c.【鍊金轉化】**：解釋 ${alch} 階段代表的意義，並給出一個具體能執行的「下一步」。
+
+3. **結尾行動**（固定結語）：
+「✨ 更詳盡的解讀請截圖或複製下方內容給 LuxAxion Lab（Instagram @LuxAxion.Lab)。
+💎 如需能量手鍊訂製或問題引導教練，請洽 LuxAxion Lab（Instagram @LuxAxion.Lab)。」`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }]
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                console.error("對位失敗:", data.error);
+                aiLoading.innerText = `🔮 智庫對位中 (Error: ${data.error.message})`;
+                return;
+            }
+
+            const aiResult = data.candidates[0].content.parts[0].text;
+            aiLoading.style.display = 'none';
+            // 使用 innerHTML 確保換行與加粗能顯示（若 AI 回傳 Markdown 格式）
+            aiText.innerHTML = aiResult.replace(/\n/g, '<br>');
+        } catch (error) {
+            aiLoading.innerText = "🔮 能量傳輸中，請稍候。";
+        }
+    }
+    function copyData() {
+        let changeCount = coins.filter(n => n === 6 || n === 9).length;
+        let sum = coins.reduce((a, b) => a + b, 0);
+        let diff = 55 - sum;
+        let dayanPos = "";
+        let cyclePos = diff % 12; 
+        if (cyclePos === 0) cyclePos = 12; 
+        if (cyclePos <= 6) { dayanPos = `第 ${cyclePos} 爻 (向上)`; } 
+        else { dayanPos = `第 ${13 - cyclePos} 爻 (向下)`; }
+
+        const rules = {
+            0: "以本卦的卦辭、卦義解卦。輔以大衍之數。",
+            1: "以本卦變爻辭解卦。",
+            2: "以本卦二變爻解卦（下爻為貞，上爻為悔）。",
+            3: "以本卦及變卦卦辭解卦（本卦為貞，變卦為悔）。",
+            4: "以變卦為貞，本卦為悔。",
+            5: "以變卦為貞，本卦為悔。",
+            6: "乾坤卦用九六，餘卦以變卦卦辭解。"
+        };
+        let logic = rules[changeCount] || rules[6];
+        let cc = coins.map(n => (n === 6 ? 7 : (n === 9 ? 8 : n)));
+        let gn1 = getGua(coins), gn2 = getGua(cc);
+
+        const textToCopy = `【 我的定位報告 】\n` +
+                           `問題：${q}\n` +
+                           `本卦：${gn1} (${coins.join(',')})\n` +
+                           `變卦：${gn2} (${cc.join(',')})\n` +
+                           `變爻數：${changeCount}\n` +
+                           `大衍之數：${sum} (減數：${diff} | 位處：${dayanPos})\n` +
+                           `解卦邏輯：${logic}\n` +
+                           `🔮 能量共振：${kab}\n` +
+                           `🔥 注入色調：${alch}`;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            document.getElementById('copy-status').style.display = 'block';
+            setTimeout(() => { document.getElementById('copy-status').style.display = 'none'; }, 2000);
+        });
+    }
+</script>
+</body>
+</html>
