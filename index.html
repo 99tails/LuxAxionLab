@@ -281,26 +281,41 @@
         }, 600);
     }
 
+    // 修正後的 getGua：確保二進位字串生成穩定
     function getGua(cArr) {
+        // 易經邏輯：7與9為陽(1)，6與8為陰(0)
         let b = cArr.map(n => (n === 7 || n === 9 ? "1" : "0")).join("");
         return GUA_LIST[b] || "未知卦象";
     }
 
+    // 修正後的 drawG：正確處理變爻邏輯
     function drawG(id, isC) {
         const el = document.getElementById(id);
-        const targetCoins = isC ? coins.map(n => (n===6?7:(n===9?8:n))) : coins;
+        
+        // 修正後的變卦生成邏輯：
+        // 如果是計算變卦(isC 為 true)，老陽(9)變陰(0/8)，老陰(6)變陽(1/7)
+        // 少陽(7)與少陰(8)保持不變
+        const targetCoins = isC ? coins.map(n => {
+            if (n === 9) return 8; // 老陽變少陰
+            if (n === 6) return 7; // 老陰變少陽
+            return n;              // 少陽少陰不變
+        }) : coins;
+
         const gName = getGua(targetCoins);
-        document.getElementById(id+'-title').innerText = (isC?'變卦：':'本卦：') + gName;
+        document.getElementById(id + '-title').innerText = (isC ? '變卦：' : '本卦：') + gName;
+        
         el.innerHTML = "";
+        // 易經畫卦是由下往上，所以要 reverse
         [...targetCoins].reverse().forEach((n, i) => {
-            let isY = (n===7 || n===9);
+            // 這裡判斷畫「實線」還是「斷線」
+            let isY = (n === 7 || n === 9);
             let d = document.createElement('div');
-            d.className = 'line' + (!isC && (coins[5-i]===6||coins[5-i]===9) ? ' active':'');
+            // 只有在本卦中，且該爻是動爻(6或9)時才發亮
+            d.className = 'line' + (!isC && (coins[5 - i] === 6 || coins[5 - i] === 9) ? ' active' : '');
             d.innerText = isY ? "———————" : "———  ———";
             el.appendChild(d);
         });
     }
-
    async function getAIGuidance() {
         const aiBox = document.getElementById('ai-guidance');
         const aiText = document.getElementById('ai-text');
