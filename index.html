@@ -317,85 +317,76 @@
         });
     }
    async function getAIGuidance() {
-        const aiBox = document.getElementById('ai-guidance');
-        const aiText = document.getElementById('ai-text');
-        const aiLoading = document.getElementById('ai-loading');
-        
-        aiBox.style.display = 'block';
-        aiText.innerText = '';
-        aiLoading.style.display = 'inline';
+    const aiBox = document.getElementById('ai-guidance');
+    const aiText = document.getElementById('ai-text');
+    const aiLoading = document.getElementById('ai-loading');
+    
+    aiBox.style.display = 'block';
+    aiText.innerText = '';
+    aiLoading.style.display = 'inline';
 
-        // 核心設定
-        const part1 = "AIzaSyDIKcvgd--"; 
-        const part2 = "YfolSApsJFxo1j5GuLnJuYPQ"; 
-        const API_KEY = part1 + part2;
-        const modelName = "gemini-flash-latest"; 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
+    // 1. 精確計算變爻位置（易經由下往上為 1-6 爻）
+    const movingLines = [];
+    coins.forEach((val, idx) => {
+        if (val === 6 || val === 9) movingLines.push(idx + 1);
+    });
 
-        // 1. 計算變爻與解卦邏輯
-        const changeCount = coins.filter(n => n === 6 || n === 9).length;
-        const rules = {
-            0: "以本卦的卦辭、卦義解卦。輔以大衍之數。",
-            1: "以本卦變爻辭解卦。",
-            2: "以本卦二變爻解卦（下爻為貞，上爻為悔）。",
-            3: "以本卦及變卦卦辭解卦（本卦為貞，變卦為悔）。",
-            4: "以變卦為貞，本卦為悔。",
-            5: "以變卦為貞，本卦為悔。",
-            6: "乾坤卦用九六，餘卦以變卦卦辭解。"
-        };
-        const specificRule = rules[changeCount] || rules[6];
+    const changeCount = movingLines.length;
+    const rules = {
+        0: "以【本卦卦辭】為核心，說明大環境背景。",
+        1: `核心關鍵在【本卦第 ${movingLines[0]} 爻】的爻辭，這是目前的關鍵轉折點。`,
+        2: `觀察【本卦第 ${movingLines[0]} 爻】（主）與【第 ${movingLines[1]} 爻】（輔）的變化。`,
+        3: `目前局勢混沌，請平衡參考【本卦卦辭】與【變卦卦辭】，兩者權重各半。`,
+        4: `重心已移往未來，請以【變卦】中「不變的兩爻」來推論，並以【變卦卦辭】為主。`,
+        5: `局勢幾乎完全轉化，請直接以【變卦】中唯一的「不變爻」辭解卦。`,
+        6: `若是乾坤卦則看用九用六，其餘請全數以【變卦卦辭】解讀。`
+    };
 
-        // 2. 建構深度 Prompt
-        const prompt = `
-你是一位 LuxAxion 高級導師。你說話的語氣應「溫暖、專業、易懂」，避免過多難懂的文言文或艱深術語，請用現代白話語氣將智慧轉化為具體的指引。
+    const specificRule = rules[changeCount] || rules[6];
 
-【核心數據】
-問題：${q}
-本卦：${getGua(coins)}
-變爻數：${changeCount}
-解卦準則：${rules[changeCount]||rules[6]}
-卡巴拉：${kab}
-鍊金術階段：${alch}
+    // 2. 建構強制性 Prompt
+    const prompt = `
+你現在是 LuxAxion 高級導師，負責執行精準的「周易」解卦演算法。
 
-【回覆規則】
-1. **垃圾過濾**：若問題無意義（如 test, 123...），僅回覆：「🔮 能量尚未聚焦。請誠心輸入您具體想指引的問題，再進行校準。」並結束。
+【核心輸入數據】
+- 用戶問題：${q}
+- 本卦：${getGua(coins)} (爻位數據：${coins.join(',')})
+- 變爻數量：${changeCount}
+- 變爻位置：第 ${movingLines.join(', ') || '無'} 爻
+- 判定準則：${specificRule}
+- 卡巴拉路徑：${kab}
+- 鍊金術階段：${alch}
 
-2. **深度解析要求**：
-   * **全部的回覆字數約在300字內，不要在回覆末尾顯示「(xx字)」等字數標註。**
-   * **開頭不要用LuxAxion 高級導師的開頭**
-   * **a.【卦象指引】**：用平易近人的白話解釋卦象對目前問題的影響。就像在聊天一樣，告訴對方現在的局勢是什麼、要注意什麼。
-   * **b.【能量共振】**：根據 ${kab} 給予生活化的心靈建議，讓對方知道可以如何調整心態。
-   * **c.【鍊金轉化】**：解釋 ${alch} 階段代表的意義，並給出一個具體能執行的「下一步」。
+【解讀強制指令】
+1. **嚴格解卦邏輯**：你必須優先根據「判定準則」指定的爻位或卦辭進行解讀。如果是 1 變爻，請重點解析該爻位之象。
+2. **結構化回覆**：
+   - **【卦象指引】**：直接切入重點，告訴用戶根據 ${getGua(coins)} 的 ${specificRule}，當前的「局」是什麼。
+   - **【能量共振】**：連結卡巴拉 ${kab}，提供心態上的對位建議。
+   - **【鍊金轉化】**：結合鍊金術 ${alch} 階段，給出一個「當下立即可以做的行為」。
+3. **風格規範**：語氣精確、具有洞察力、溫暖但專業。總字數控制在 250-300 字。
 
-3. **結尾行動**（固定結語）：
-「✨ 更詳盡的解讀請截圖或複製下方內容給 LuxAxion Lab（Instagram @LuxAxion.Lab)。
-💎 如需能量手鍊訂製或問題引導教練，請洽 LuxAxion Lab（Instagram @LuxAxion.Lab)。」`;
+【禁用詞】不要提及「根據判定準則」或「演算法」等字眼，直接輸出解讀內容。`;
 
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
-                })
-            });
+    // API Call 部分保持不變...
+    const part1 = "AIzaSyDIKcvgd--"; 
+    const part2 = "YfolSApsJFxo1j5GuLnJuYPQ"; 
+    const API_KEY = part1 + part2;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-            const data = await response.json();
-            
-            if (data.error) {
-                console.error("對位失敗:", data.error);
-                aiLoading.innerText = `🔮 智庫對位中 (Error: ${data.error.message})`;
-                return;
-            }
-
-            const aiResult = data.candidates[0].content.parts[0].text;
-            aiLoading.style.display = 'none';
-            // 使用 innerHTML 確保換行與加粗能顯示（若 AI 回傳 Markdown 格式）
-            aiText.innerHTML = aiResult.replace(/\n/g, '<br>');
-        } catch (error) {
-            aiLoading.innerText = "🔮 能量傳輸中，請稍候。";
-        }
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const data = await response.json();
+        const aiResult = data.candidates[0].content.parts[0].text;
+        aiLoading.style.display = 'none';
+        aiText.innerHTML = aiResult.replace(/\n/g, '<br>');
+    } catch (error) {
+        aiLoading.innerText = "🔮 能量傳輸中，請稍候。";
     }
+}
     function copyData() {
         let changeCount = coins.filter(n => n === 6 || n === 9).length;
         let sum = coins.reduce((a, b) => a + b, 0);
