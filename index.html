@@ -13,6 +13,8 @@
         .step.active { display: block; animation: fadeIn 0.8s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 15px; color: #fff; padding: 15px; font-size: 1rem; outline: none; margin-top: 20px; box-sizing: border-box; }
+        /* 優惠碼輸入框樣式 */
+        .promo-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 10px; color: #fff; padding: 10px; font-size: 0.9rem; outline: none; margin-top: 10px; box-sizing: border-box; text-align: center; }
         .instruction-list { text-align: center; font-size: 0.9rem; line-height: 1.8; color: var(--white); opacity: 0.9; margin: 20px 0; list-style: none; padding: 0; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
         .modal-content { width: 85%; max-width: 350px; background: #1A2233; border: 1px solid var(--gold); border-radius: 20px; padding: 25px; text-align: left; position: relative; animation: modalIn 0.4s ease forwards; }
@@ -46,20 +48,39 @@
         .ig-redirect-box { margin-top: 25px; padding: 15px; background: rgba(197, 160, 89, 0.08); border: 1px solid rgba(197, 160, 89, 0.3); border-radius: 12px; text-align: center; }
         .ig-text { font-size: 0.9rem; color: #333; margin-bottom: 10px; line-height: 1.5; }
         .ig-link { display: inline-flex; align-items: center; justify-content: center; color: var(--gold) !important; text-decoration: none; font-weight: bold; font-size: 1rem; padding: 8px 16px; border: 1.5px solid var(--gold); border-radius: 30px; transition: all 0.3s ease; }
+        #ai-text a { color: var(--gold); text-decoration: underline; font-weight: bold; }
     </style>
 </head>
 <body>
-
+<div id="welcomeModal" class="modal-overlay" style="display: flex;">
+    <div class="modal-content" style="position: relative;">
+        <div onclick="toggleModal('welcomeModal', false)" style="position: absolute; top: 15px; right: 20px; color: var(--gold); font-size: 1.5rem; cursor: pointer; font-weight: bold;">✕</div>
+        
+        <div class="modal-title">LuxAxion 5D 實相導航</div>
+        <div class="modal-body">
+            2026 丙午流年啟動。赤馬奔騰之時，正是實相轉化最快的瞬間！<br><br>
+            本系統整合<b>易經、卡巴拉、鍊金術</b>數據，透過 「頻率對位」 捕捉午馬年的強大火能，診斷您的能量路徑，將意圖化為疾馳的現實。<br><br>
+            <span style="color: var(--gold); font-weight: bold;">⚠️ 使用須知：</span><br>
+            系統致力於<b>「頻率校準」</b>，而非博弈預測（顯化速度取決於您的執行力）。<br>
+            我們專注於<b>實相顯化</b>，不討論生死與壽元等封閉課題。<br>
+            所有的指引皆為<b>「實相映射」</b>，您才是拉動韁繩的導航者。<br><br>
+            熱門問題：<br>「若我在2026年要賺到1000萬，我需要做什麼提升？」<br>
+            「若我要追求xxx對象，我需要做什麼調整？<br><br>
+            準備好與您的潛意識對位了嗎？
+        </div>
+        <button class="main-btn" onclick="toggleModal('welcomeModal', false)">進入系統</button>
+    </div>
+</div>
 <div id="helpModal" class="modal-overlay" onclick="toggleModal('helpModal', false)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-title">如何更精準地提問？</div>
         <div class="modal-body">
-            1. <b>具體化問題：</b>避免問「我的未來如何？」，試著問「這兩個月內換工作對我的發展是否有益？」<br><br>
-            2. <b>專注當下：</b>潛意識導航適合解決目前的卡點與抉擇。<br><br>
-            3. <b>是非/選擇：</b>問題可以包含明確的動作，例如「我是否該啟動新的投資計畫？」<br><br>
-            4. <b>保持平靜：</b>輸入完後，請務必按照畫面的指令默念，這能協助您的能量對位。
+            1. <b>具體化問題：</b>避免問「我的未來如何？」，試著問「若我在2026年要賺到1000萬，我需要做什麼提升？」、「這兩個月內換工作對我的發展是否有益？」等<br><br>
+            2. <b>專注當下：</b>LuxAxion 導航適合解決目前的卡點與抉擇。<br><br>
+            3. <b>行動導向：</b>問題可以包含明確的動作。例如：「我是否該現在執行這筆投資配置？」<br><br>
+            4. <b>保持平靜：</b>輸入完成後，請依照畫面指令默念。這能協助您的意識回歸中道，確保數據傳輸無雜訊。
         </div>
-        <button class="close-modal" onclick="toggleModal('helpModal', false)">我明白了</button>
+        <button class="close-modal" onclick="toggleModal('helpModal', false)">我已準備好顯化</button>
     </div>
 </div>
 <div id="introModal" class="modal-overlay" onclick="toggleModal('introModal', false)">
@@ -73,18 +94,19 @@
         <button class="close-modal" onclick="toggleModal('introModal', false)">開始對位</button>
     </div>
 </div>
+
 <div class="container">
     <div class="logo">LuxAxion.Lab</div>
 
     <div id="s0" class="step active">
         <div style="color:var(--gold); font-size:1.1rem; font-weight:bold;">給你的困惑與問題，<br>找回精準的方向與下一步。</div>
-        <div style="color:#666; font-size:1.1rem;">created by <a href="https://www.instagram.com/LuxAxion.Lab">LuxAxion.Lab</a></div>
         <ul class="instruction-list">
             <li>輸入問題後，請默念以下：</li>
             <li>自己的名字三次 | 出生年月日 | 詢問的問題</li>
             <li>最後默念：「請我的潛意識給我一個指示」</li>
         </ul>
         <textarea id="ui-q" placeholder="在此輸入你的困惑或問題..."></textarea>
+        <input type="text" id="ui-promo" class="promo-input" placeholder="請輸入優惠碼 (選填)">
         <div>
             <span class="help-link" onclick="toggleModal('introModal', true)">📜 啟動前必看</span>
             <span class="help-link" onclick="toggleModal('helpModal', true)">💡 如何問問題？</span>
@@ -93,16 +115,17 @@
     </div>
 
     <div id="s1" class="step">
-        <h3 style="color:var(--gold);">來擲硬幣吧</h3>
-        <p style="opacity:0.8; font-size:0.9rem;">誠心地按下每一次的按鈕，一共六次</p>
-        <div id="coin-lab">
-            <div class="coin-slot"><div id="c1" class="coin">LIGHT</div></div>
-            <div class="coin-slot"><div id="c2" class="coin">LIGHT</div></div>
-            <div class="coin-slot"><div id="c3" class="coin">LIGHT</div></div>
-        </div>
-        <div id="coin-log" style="font-size:0.8rem; color:var(--gold); min-height:80px; margin-bottom:15px;"></div>
-        <button id="btn-toss" class="main-btn" onclick="doToss()">擲幣對齊</button>
+    <h3 style="color:var(--gold);">來擲硬幣吧</h3>
+    <p style="opacity:0.8; font-size:0.9rem;">誠心地按下每一次的按鈕，一共六次</p>
+    <div id="coin-lab">
+        <div class="coin-slot"><div id="c1" class="coin">LIGHT</div></div>
+        <div class="coin-slot"><div id="c2" class="coin">LIGHT</div></div>
+        <div class="coin-slot"><div id="c3" class="coin">LIGHT</div></div>
     </div>
+    <div id="coin-log" style="font-size:0.8rem; color:var(--gold); min-height:80px; margin-bottom:15px;"></div>
+    <button id="btn-toss" class="main-btn" onclick="doToss()">擲幣對齊</button>
+    <button id="btn-next-s2" class="main-btn" style="display:none; background:var(--white); color:var(--midnight);" onclick="toStep(2)">確認對位，前往下一步</button>
+</div>
 
     <div id="s2" class="step">
         <h3 style="color:var(--gold);">看著這些符號，哪一個對你來說最「有感覺」？</h3>
@@ -138,12 +161,13 @@
                 <div style="text-align:center;"><div id="g2-title" style="font-size:0.8rem; font-weight:bold; color:var(--gold); margin-bottom:5px;">變卦</div><div id="g2"></div></div>
             </div>
             <div id="ai-guidance" style="margin-bottom: 15px; padding: 12px; background: #fff; color: #141E30; border-radius: 12px; font-weight: bold; font-size: 0.95rem; border-left: 5px solid var(--gold); display: none;">
-                <span id="ai-loading">🔮 導航對位中...</span>
-                <span id="ai-text"></span>
+                <span id="ai-loading">導航對位中...</span>
+                <div id="ai-text"></div>
             </div>
             <div style="font-size:0.9rem; line-height:1.8;">
                 <div id="rf-k"></div>
                 <div id="rf-a"></div>
+                <div id="rf-promo" style="color:var(--gold); font-weight:bold; margin-top:5px;"></div>
             </div>
             <button class="copy-btn" onclick="copyData()">📋 點選按鈕複製導航數據</button>
             <div class="ig-redirect-box">
@@ -159,16 +183,19 @@
 <script>
     const GUA_LIST = {"111111":"乾為天","000000":"坤為地","100010":"水雷屯","010001":"山水蒙","111010":"水天需","010111":"天水訟","010000":"地水師","000010":"水地比","111011":"風天小畜","110111":"天澤履","111000":"地天泰","000111":"天地否","101111":"天火同人","111101":"火天大有","001000":"地山謙","000100":"雷地豫","100110":"澤雷隨","011001":"山風蠱","110000":"地澤臨","000011":"風地觀","100101":"火雷噬嗑","101001":"山火賁","000001":"山地剝","100000":"地雷復","100111":"天雷無妄","111001":"山天大畜","100001":"山雷頤","011110":"澤風大過","010010":"坎為水","101101":"離為火","001110":"澤山咸","011100":"雷風恆","001111":"天山遯","111100":"雷天大壯","000101":"火地晉","101000":"地火明夷","101011":"風火家人","110101":"火澤睽","001010":"水山蹇","010100":"雷水解","110001":"山澤損","100011":"風雷益","111110":"澤天夬","011111":"天風姤","000110":"澤地萃","011000":"地風升","010110":"澤水困","011010":"水風井","101110":"澤火革","011101":"火風鼎","100100":"震為雷","001001":"艮為山","001011":"風山漸","110100":"雷澤歸妹","101100":"雷火豐","001101":"火山旅","011011":"巽為風","110110":"兌為澤","010011":"風水渙","110010":"水澤節","110011":"風澤中孚","001100":"雷山小過","101010":"水火既濟","010101":"火水未濟"};
 
-    let q="", coins=[], kab="", alch="", isAn=false;
+    let q="", promo="", coins=[], kab="", alch="", isAn=false;
 
     function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
     function toStep(n) {
         if(n===1 && !document.getElementById('ui-q').value) return alert("請輸入問題");
         q = document.getElementById('ui-q').value;
+        // 抓取優惠碼
+        promo = document.getElementById('ui-promo').value || "無";
         document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
         document.getElementById('s'+n).classList.add('active');
     }
 
+    // doToss, selK 保持原樣
     function doToss() {
         if(isAn || coins.length>=6) return;
         isAn = true;
@@ -184,10 +211,13 @@
             logEntry.innerHTML = `<span style="color:rgba(255,255,255,0.5)">第 ${coins.length} 爻：</span> [${m[s]}]`;
             document.getElementById('coin-log').insertBefore(logEntry, document.getElementById('coin-log').firstChild);
             isAn = false;
+            
+            // --- 這裡做了修改 ---
             if(coins.length===6) {
-                document.getElementById('btn-toss').innerText = "對齊完成";
-                setTimeout(() => toStep(2), 1000);
+                document.getElementById('btn-toss').style.display = "none"; // 隱藏原本的擲幣鈕
+                document.getElementById('btn-next-s2').style.display = "block"; // 顯示下一步按鈕
             }
+            // ------------------
         }, 50);
     }
     
@@ -197,8 +227,10 @@
         setTimeout(() => {
             toStep(4);
             document.getElementById('rf-q').innerText = "你的問題是：" + q;
-            document.getElementById('rf-k').innerHTML = "🔮 能量共振：<strong>" + kab + "</strong>";
-            document.getElementById('rf-a').innerHTML = "🔥 注入色調：<strong>" + alch + "</strong>";
+            document.getElementById('rf-k').innerHTML = "卡巴拉共振：<strong>" + kab + "</strong>";
+            document.getElementById('rf-a').innerHTML = "煉金術色調：<strong>" + alch + "</strong>";
+            // 在結果頁面顯示優惠碼
+            document.getElementById('rf-promo').innerText = (promo !== "無") ? "優惠碼：" + promo : "";
             drawG('g1', false); drawG('g2', true);
             getAIGuidance();
         }, 600);
@@ -222,15 +254,11 @@
         });
     }
 
-    // --- 大衍位處計算核心 (鏡像蛇行邏輯) ---
     function getDayanPos(diff) {
         if (diff <= 0) return "無";
         const cycle = Math.ceil(diff / 6); 
         const remainder = diff % 6 || 6;
         const yaoNames = ["第一爻", "第二爻", "第三爻", "第四爻", "第五爻", "第六爻"];
-        
-        // 奇數循環 (1, 3, 5...) 由下往上: 1->6
-        // 偶數循環 (2, 4, 6...) 由上往下: 6->1
         if (cycle % 2 !== 0) {
             return yaoNames[remainder - 1];
         } else {
@@ -238,7 +266,7 @@
         }
     }
 
-    // --- AI 核心邏輯區 ---
+    // AI 解讀邏輯 Prompt 完全保持您原本的樣子
     async function getAIGuidance() {
         const aiBox = document.getElementById('ai-guidance');
         const aiText = document.getElementById('ai-text');
@@ -246,14 +274,12 @@
         aiBox.style.display = 'block';
         aiLoading.style.display = 'inline';
 
-        const part1 = "AIzaSyDIKcvgd--"; 
+         const part1 = "AIzaSyDIKcvgd--"; 
         const part2 = "YfolSApsJFxo1j5GuLnJuYPQ"; 
         const API_KEY = part1 + part2;
         const modelName = "gemini-flash-latest"; 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
 
-
-        // 1. 計算數據
         const movingLines = [];
         coins.forEach((v, i) => { if(v===6||v===9) movingLines.push(i+1); });
         const changeCount = movingLines.length;
@@ -262,13 +288,13 @@
         const dayanPos = getDayanPos(diff);
 
         const rules = {
-            0: "以本卦的卦辭、卦義解卦。輔以大衍之數。",
-            1: `核心關鍵在【本卦第 ${movingLines[0]} 爻】`,
-            2: `以【本卦第 ${movingLines[0]} 爻】為主，【第 ${movingLines[1]} 爻】為輔。`,
+            0: "以本卦的卦辭解卦。輔以大衍之數。",
+            1: `以第 ${movingLines[0]} 爻】爻辭解卦`,
+            2: `以【本卦第 ${movingLines[1]} 爻】為主，【第 ${movingLines[0]} 爻】為輔。`,
             3: `以本卦及變卦卦辭解卦（本卦為貞，變卦為悔）`,
-            4: `以變卦為貞，本卦為悔`,
-            5: `以變卦為貞，本卦為悔`,
-            6: `乾坤卦用九六，餘卦以變卦卦辭解`
+            4: `以變卦之兩不變爻爻辭斷，但以下者為主`,
+            5: `以變卦之不變爻爻辭斷`,
+            6: `以變卦之卦辭斷，乾卦與坤卦則已「用」辭斷`
         };
 
         const prompt = `你是一位 LuxAxion 高級導師。
@@ -280,18 +306,20 @@
 - 卡巴拉/鍊金術：${kab} / ${alch}
 
 【解讀指令】
-1. **垃圾過濾**：若問題無意義（如 test, 123...），僅回覆：「🔮 能量尚未聚焦。請誠心輸入您具體想指引的問題，再進行校準。」並結束。
+1. **垃圾過濾**：若輸入為無意義數據（如 test, 123, 做測試...），回覆：「LuxAxion 系統警示：能量尚未聚焦。 實相掃描需要具體的意圖對位。請誠心輸入您想解析的問題，我們再重新啟動頻率校準。」並結束。
 2. **深度解析要求**：
-   **卦象指引**：結合「大衍之數」與「判定準則」，用白話解釋目前「局勢」。
-   **能量共振**：根據卡巴拉 ${kab} 提供心靈調整方向。
-   **鍊金轉化**：結合 ${alch} 階段，給出一個具體能執行的「下一步行動」。
+   **卦象指引**：根據「判定準則」，用白話解釋目前「局勢」，精準解釋目前的時空局勢與趨勢走向。
+   **能量共振**：根據卡巴拉 ${kab} 分析當下問題的能量定位與流向。指出靈魂在哪個質點共振，並判斷能量是通暢還是堵塞。
+   **鍊金轉化**：結合 ${alch} 階段，定義目前的心理顯像色彩（黑、白、黃、紅）。根據當前階段，給出一個能達成「狀態轉化」的具體行動指令。
+   **物理顯存**：建議適合此頻率的物理媒介（如水晶種類、配戴方式），將意念鎖定並落地。
+3. **實相顯化建議**：結合 Reality Transurfing 邏輯，給出最終的決策指令。
 
-字數 500 字內。語氣溫暖直覺。直接輸出內容。
+字數 1000 字內。語氣溫暖直覺，如果客戶的問題是商業決策，可以考慮讓 AI 稍微帶一點「執行長式的果斷」；如果是感情問題，則維持溫暖。直接輸出內容。
 結尾固定：
 「✨ 更詳盡的解讀請截圖或複製下方內容給 LuxAxion Lab。
 💎 [Instagram @LuxAxion.Lab](https://www.instagram.com/LuxAxion.Lab)。」`;
 
-       try {
+        try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -299,11 +327,7 @@
             });
             const data = await response.json();
             let result = data.candidates[0].content.parts[0].text;
-
-            // --- 處理 Markdown 連結轉換為 HTML 超連結 ---
-            // 匹配 [文字](網址) 格式並轉化為 <a href="網址" target="_blank">文字</a>
             result = result.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-            
             aiLoading.style.display = 'none';
             aiText.innerHTML = result.replace(/\n/g, '<br>');
         } catch (e) { aiLoading.innerText = "🔮 對位暫緩，請稍後。"; }
@@ -312,8 +336,41 @@
     function copyData() {
         const sum = coins.reduce((a, b) => a + b, 0);
         const diff = 55 - sum;
+        const cycle = Math.ceil(diff / 6);
+        const direction = (cycle % 2 !== 0) ? "向上" : "向下";
         const dayanPos = getDayanPos(diff);
-        const textToCopy = `【 LuxAxion 定位報告 】\n問題：${q}\n本卦：${getGua(coins)}\n變爻數：${coins.filter(n=>n===6||n===9).length}\n大衍之數：${sum} (減數：${diff} | 位處：${dayanPos})\n能量共振：${kab}\n鍊金階段：${alch}`;
+        
+        const movingLines = [];
+        coins.forEach((v, i) => { if(v===6||v===9) movingLines.push(i+1); });
+        const changeCount = movingLines.length;
+
+        const changedCoins = coins.map(n => (n===9 ? 8 : n===6 ? 7 : n));
+        const rawChangedCoins = changedCoins.join(',');
+
+        const logicMapping = {
+            0: "以本卦的卦辭解卦。輔以大衍之數。",
+            1: `以第 ${movingLines[0]} 爻爻辭解卦`,
+            2: `以本卦第 ${movingLines[1]} 爻為主，【第 ${movingLines[0]} 爻】為輔。`,
+            3: `以本卦及變卦卦辭解卦（本卦為貞，變卦為悔）`,
+            4: `以變卦之兩不變爻爻辭斷，但以下者為主`,
+            5: `以變卦之不變爻爻辭斷`,
+            6: `以變卦之卦辭斷，乾卦與坤卦則已「用」辭斷`
+        };
+        const logicText = logicMapping[changeCount] || logicMapping[6];
+        const rawCoins = coins.join(',');
+
+        // 複製內容新增優惠碼
+        const textToCopy = `【 我的定位報告 】
+問題：${q}
+優惠碼：${promo}
+本卦：${getGua(coins)} (${rawCoins})
+變卦：${getGua(changedCoins)} (${rawChangedCoins})
+變爻數：${changeCount}
+大衍之數：${sum} (減數：${diff} | 位處：${dayanPos} (${direction}))
+解卦邏輯：${logicText}
+能量共振：${kab}
+注入色調：${alch}`;
+
         navigator.clipboard.writeText(textToCopy).then(() => {
             document.getElementById('copy-status').style.display = 'block';
             setTimeout(() => { document.getElementById('copy-status').style.display = 'none'; }, 2000);
